@@ -85,6 +85,10 @@ You need a Windows, macOS or Linux computer with Python 3.12 for the app, and a 
 
 **1. Install the app (once)**
 
+**Windows, easiest:** double-click `start_app.bat`. On the first run it creates the Python environment (`.venv`) and installs everything from `requirements.lock.txt`. This takes about 5 to 15 minutes, and then it starts the app. It uses [uv](https://docs.astral.sh/uv/) if you have it; otherwise it needs Python 3.12 from [python.org](https://www.python.org/downloads/).
+
+**Manual install (any system):**
+
 ```powershell
 git clone https://github.com/CrazAzartto/trycraz-virtual-tryon.git
 cd trycraz-virtual-tryon
@@ -94,11 +98,11 @@ uv pip install --python .venv\Scripts\python.exe -r requirements.lock.txt
 .venv\Scripts\python scripts\check_env.py
 ```
 
-On macOS or Linux, use `.venv/bin/python` instead of `.venv\Scripts\python.exe`.
+On macOS or Linux, use `.venv/bin/python` instead of `.venv\Scripts\python.exe`. If you downloaded a zip instead of cloning, skip the first two lines and open a terminal in the unzipped folder.
 
 **2. Start the GPU server.** Upload `notebooks/colab_tryon_server.ipynb` to Kaggle (GPU T4, Internet on) or Colab (T4 runtime) and run all cells. The last step prints a **URL** and an **API key**. The [setup guide](docs/SETUP.md) has every click.
 
-**3. Start the app.** On Windows, double-click `start_app.bat` and paste the URL and key. Otherwise run:
+**3. Start the app.** On Windows, double-click `start_app.bat` and paste the URL and key, or leave both empty to use only the Recommendations page. Otherwise run:
 
 ```bash
 .venv/bin/streamlit run app.py

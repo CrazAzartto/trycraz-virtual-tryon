@@ -9,10 +9,22 @@ The Recommendations page works without the GPU server.
 
 ## 1. Install the app (once)
 
-Requirements: Python **3.12**, git, and a few GB of free disk space for the libraries and the CLIP model, which is downloaded on first use.
+### Windows: automatic
+
+Double-click `start_app.bat` in the project folder. If the Python environment does not exist yet, it asks *Set it up now? [Y/n]*. Press Enter and it will:
+
+1. create a `.venv` folder with Python 3.12, using [uv](https://docs.astral.sh/uv/) if it is installed (uv can also download Python 3.12 by itself), and otherwise using Python 3.12 (or 3.11) from [python.org](https://www.python.org/downloads/);
+2. install the exact library versions from `requirements.lock.txt`, falling back to `requirements.txt` if that fails;
+3. start the app.
+
+This takes about 5 to 15 minutes and downloads 1 to 2 GB. It happens only on the first run. If Python is missing, the window says so; install Python 3.12 (tick **Add python.exe to PATH**) and double-click the file again. To only set up the environment without starting the app, run `start_app.bat --setup-only` in a terminal.
+
+### Manual (any system)
+
+Requirements: Python **3.12**, and a few GB of free disk space for the libraries and the CLIP model, which is downloaded on first use.
 
 ```powershell
-git clone https://github.com/CrazAzartto/trycraz-virtual-tryon.git
+git clone https://github.com/CrazAzartto/trycraz-virtual-tryon.git   # or unzip the project and open a terminal in it
 cd trycraz-virtual-tryon
 pip install uv
 uv venv .venv --python 3.12
@@ -20,9 +32,17 @@ uv pip install --python .venv\Scripts\python.exe -r requirements.lock.txt
 .venv\Scripts\python scripts\check_env.py
 ```
 
-- `requirements.lock.txt` pins the exact versions we tested on Windows 11. If it fails on another system, use `requirements.txt`, which lists the same packages with looser versions.
+Without uv, use the standard tools instead:
+
+```powershell
+py -3.12 -m venv .venv
+.venv\Scripts\python -m pip install -r requirements.lock.txt
+```
+
+- `requirements.lock.txt` pins the exact versions we tested on Windows 11 with Python 3.12. If it fails on another system, use `requirements.txt`, which lists the same packages with looser versions.
 - On macOS or Linux, replace `.venv\Scripts\python.exe` with `.venv/bin/python`.
 - `check_env.py` prints your Python version, memory, disk space and the installed package versions, so you can see that everything was installed.
+- On first use the app also downloads the CLIP model (about 600 MB) and the U²-Net model for background removal (about 176 MB).
 
 Optional: run the tests with `.venv\Scripts\python -m pytest -m "not slow"`.
 
@@ -58,7 +78,7 @@ If Colab says *Cannot connect to GPU backend*, your free GPU quota is used up fo
 
 ## 3. Start the app
 
-**Windows:** double-click `start_app.bat` in the project folder. Paste the URL and press Enter, then paste the API key and press Enter. (In the black window, right-click pastes.) The app opens at http://localhost:8501 with both values filled in.
+**Windows:** double-click `start_app.bat` in the project folder (the first run sets things up, see step 1). Paste the URL and press Enter, then paste the API key and press Enter. Leave both empty to use only the Recommendations page. (In the black window, right-click pastes.) The app opens at http://localhost:8501 with both values filled in.
 
 **Any system:**
 
@@ -97,3 +117,4 @@ Every result is saved in `outputs/runs/<timestamp>/` with its inputs and setting
 | CLIP could not be loaded | The first use downloads about 600 MB. Check your internet connection. Recommendations still work without CLIP. |
 | *An Application Control policy has blocked this file* | Windows Smart App Control is blocking a library's DLL. The app does not need the blocked libraries (pandas, pyarrow) for its own features. If another library is blocked, turn Smart App Control off (Windows Security, then App & browser control), or allow the file. |
 | `ModuleNotFoundError` | Start the app with the project's `.venv` (or `start_app.bat`), not your system Python. |
+| `start_app.bat` setup stopped halfway | Double-click `start_app.bat` again. It deletes the unfinished `.venv` and starts the setup over. |

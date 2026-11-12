@@ -63,7 +63,7 @@ st.markdown("""
 - The demo catalogue images are **low resolution** (400 px), which limits fine detail.
 - **No traditional Indian wear** in the catalogue yet (kurta, saree). Draped garments such as sarees are outside what this model supports.
 - Dress-code knowledge is hand-written and culturally specific; recommendations are suggestions, not rules.
-- Try-on needs a GPU: here, a free Google Colab session, which can disconnect.
+- Try-on needs a GPU: here, a free Kaggle or Google Colab session, which can disconnect.
 """)
 
 theme.section("Credits and licences")

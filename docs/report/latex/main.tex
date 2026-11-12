@@ -14,6 +14,7 @@
 \usepackage[hidelinks]{hyperref}
 
 \definecolor{ink}{HTML}{2B2B2B}
+\definecolor{repoblue}{HTML}{0B57D0}
 \definecolor{edge}{HTML}{6B6B6B}
 \definecolor{ours}{HTML}{EEF2F6}
 \definecolor{ourline}{HTML}{4A5E78}
@@ -38,6 +39,14 @@ Roll No: B23CH1032}
 Roll No: B23ME1073}
 }
 
+\IEEEaftertitletext{%
+  \vspace{-0.35\baselineskip}%
+  \begin{center}
+  \setlength{\fboxsep}{5pt}%
+  \fcolorbox{repoblue}{white}{\normalsize\textbf{\textcolor{repoblue}{GitHub repository:\ \href{https://github.com/CrazAzartto/trycraz-virtual-tryon}{https://github.com/CrazAzartto/trycraz-virtual-tryon}}}}
+  \end{center}
+  \vspace{0.2\baselineskip}}
+
 \maketitle
 
 \begin{abstract}
@@ -54,8 +63,7 @@ steps with a peak of 4.89\,GB of GPU memory. Our first real runs had two clear f
 them one hypothesis at a time showed that a photo cut off at the hips, not the garment, was the cause.
 After adding a framing rule and background removal, all six validation try-ons succeeded. On twelve
 labelled scenarios the hybrid recommender reaches a mean P@5 of 0.833 and nDCG@5 of 0.830, higher
-than either attribute rules (0.767/0.751) or CLIP alone (0.667/0.691). The code, documentation and
-results are available at \url{https://github.com/CrazAzartto/trycraz-virtual-tryon}.
+than either attribute rules (0.767/0.751) or CLIP alone (0.667/0.691).
 \end{abstract}
 
 \begin{IEEEkeywords}
