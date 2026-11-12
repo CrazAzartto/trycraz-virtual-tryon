@@ -149,7 +149,7 @@ The tests cover input validation, CatVTON-identical cropping, the server API and
 |---|---|
 | [docs/SETUP.md](docs/SETUP.md) | Step-by-step installation, GPU server on Kaggle and Colab, troubleshooting |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Components, data flow, server API, recommender formulas |
-| [docs/report/Trycraz_Project_Report.pdf](docs/report/Trycraz_Project_Report.pdf) | Full project report (IEEE format); LaTeX source in `docs/report/latex/` |
+| [docs/report/Trycraz_Project_Report.pdf](docs/report/Trycraz_Project_Report.pdf) | Full project report (NeurIPS style); LaTeX source in `docs/report/latex/` |
 | [docs/test_report.md](docs/test_report.md) | Every test and real run, including the failure diagnosis |
 | [docs/phase1_feasibility.md](docs/phase1_feasibility.md) | Model survey and design decisions |
 | [docs/PROGRESS.md](docs/PROGRESS.md) | What is done, what is pending, file log |

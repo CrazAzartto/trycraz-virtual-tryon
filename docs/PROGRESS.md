@@ -12,7 +12,7 @@ Every file created or modified, and the true status of every feature. Statuses: 
 | 4: Recommendation engine | **Done** (2026-11-08) | 52-garment demo catalogue (CC0 images, manual annotations); hybrid scoring; first evaluation run |
 | 5: Integration / UI | **Done (first version)** (2026-11-08) | Four-page Streamlit app tested headlessly (AppTest) and in a browser with the mock server. Also run on the laptop against the Kaggle/Colab GPU |
 | 6: Testing & evaluation | **In progress** | Recommender metrics + ablation done (one labeller). Pending: paired VITON-HD try-on metrics (SSIM/LPIPS/KID) on Colab, human rating sheet, second labeller |
-| 7: Report, slides, viva | **Report done** (2026-11-12) | `docs/report/Trycraz_Project_Report.pdf` (IEEE format) with LaTeX source |
+| 7: Report, slides, viva | **Report done** (2026-11-12) | `docs/report/Trycraz_Project_Report.pdf` (NeurIPS style) with LaTeX source |
 
 ## Decisions (2026-11-08)
 - GPU: free Google Colab only. Kaggle as backup.

@@ -1,17 +1,29 @@
-\documentclass[conference,letterpaper]{IEEEtran}
-\IEEEoverridecommandlockouts
+\documentclass{article}
 
-\usepackage{cite}
-\usepackage{amsmath,amssymb}
-\usepackage{graphicx}
+\PassOptionsToPackage{numbers, compress, sort}{natbib}
+\usepackage[final]{neurips_2025}
+
+% This is a course project report, not a NeurIPS paper: replace the conference footer.
+\makeatletter
+\renewcommand{\@noticestring}{B.Tech Computer Vision course project, IIT Jodhpur, November 2026.}
+\makeatother
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{url}
 \usepackage{booktabs}
-\usepackage{array}
-\usepackage{multirow}
+\usepackage{amsfonts}
+\usepackage{amsmath,amssymb}
+\usepackage{nicefrac}
+\usepackage{microtype}
 \usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{array}
 \usepackage{tikz}
 \usetikzlibrary{positioning,arrows.meta,fit,backgrounds,calc}
-\usepackage{url}
-\usepackage[hidelinks]{hyperref}
+
+\hypersetup{colorlinks=true, linkcolor=black, citecolor=black, urlcolor=black}
 
 \definecolor{ink}{HTML}{2B2B2B}
 \definecolor{repoblue}{HTML}{0B57D0}
@@ -25,29 +37,30 @@
 \newcommand{\tl}[1]{\makebox[0.1404\textwidth]{\scriptsize #1}\hspace{0.0028\textwidth}}
 \newcommand{\tlast}[1]{\makebox[0.1404\textwidth]{\scriptsize #1}}
 
-\begin{document}
-
 \title{Trycraz: Diffusion-Based Virtual Try-On with\\Context-Aware Clothing Recommendation}
 
-\author{
-\IEEEauthorblockN{Darshan Prajapati}
-\IEEEauthorblockA{Chemical Engineering\\
-Roll No: B23CH1032}
-\and
-\IEEEauthorblockN{Sunny Kumar}
-\IEEEauthorblockA{Mechanical Engineering\\
-Roll No: B23ME1073}
+\author{%
+  Darshan Prajapati \\
+  Chemical Engineering \\
+  Indian Institute of Technology Jodhpur \\
+  Roll No: B23CH1032 \\
+  \And
+  Sunny Kumar \\
+  Mechanical Engineering \\
+  Indian Institute of Technology Jodhpur \\
+  Roll No: B23ME1073 \\
 }
 
-\IEEEaftertitletext{%
-  \vspace{-0.35\baselineskip}%
-  \begin{center}
-  \setlength{\fboxsep}{5pt}%
-  \fcolorbox{repoblue}{white}{\normalsize\textbf{\textcolor{repoblue}{GitHub repository:\ \href{https://github.com/CrazAzartto/trycraz-virtual-tryon}{https://github.com/CrazAzartto/trycraz-virtual-tryon}}}}
-  \end{center}
-  \vspace{0.2\baselineskip}}
+\begin{document}
 
 \maketitle
+
+\vspace{-1.2em}
+\begin{center}
+\setlength{\fboxsep}{6pt}%
+\fcolorbox{repoblue}{white}{\normalsize\textbf{\textcolor{repoblue}{GitHub repository:\ \href{https://github.com/CrazAzartto/trycraz-virtual-tryon}{https://github.com/CrazAzartto/trycraz-virtual-tryon}}}}
+\end{center}
+\vspace{0.4em}
 
 \begin{abstract}
 Virtual try-on shows how a garment would look on a person, but it does not say whether that garment
@@ -66,12 +79,8 @@ labelled scenarios the hybrid recommender reaches a mean P@5 of 0.833 and nDCG@5
 than either attribute rules (0.767/0.751) or CLIP alone (0.667/0.691).
 \end{abstract}
 
-\begin{IEEEkeywords}
-virtual try-on, latent diffusion, CatVTON, pose estimation, salient object segmentation, CLIP,
-context-aware recommendation
-\end{IEEEkeywords}
-
 \section{Introduction}
+\label{sec:intro}
 
 When people shop for clothes online, two questions come up again and again: \emph{how will this look
 on me}, and \emph{is it right for where I am going}. Image-based virtual try-on addresses the first
@@ -102,25 +111,106 @@ explanation, so the two can never disagree;
 analysis, ranking metrics with an ablation, and 166 automated tests.
 \end{itemize}
 
-\section{Related Work}
 
+The rest of this report is organised as follows. Section~\ref{sec:lit} reviews earlier work on
+virtual try-on, the models we build on, and outfit recommendation. Section~\ref{sec:problem} states
+the problem and the constraints we worked under. Section~\ref{sec:method} describes the proposed
+method: the system, the try-on model, our own pipeline around it, the recommender and the
+optimisations we made. Section~\ref{sec:exp} reports the experiments and results, including a failure
+analysis and a discussion of limitations, and Section~\ref{sec:concl} concludes.
+
+\section{Literature Review}
+\label{sec:lit}
+
+\paragraph{Warping-based virtual try-on.}
 Early try-on methods split the problem in two: first warp the garment to the body, then blend it in.
 VITON-HD~\cite{vitonhd} raised the resolution to 1024$\times$768 with a GAN and a normalisation layer
 that handles misalignment between the warped garment and the body. Warping methods still break when
 the pose is unusual or the garment is loose, because one geometric transform cannot describe how cloth
-folds. Diffusion models changed this. Latent diffusion~\cite{ldm} runs the denoising process in the
+folds.
+
+\paragraph{Diffusion-based virtual try-on.}
+Diffusion models changed this. Latent diffusion~\cite{ldm} runs the denoising process in the
 compressed latent space of an autoencoder, which makes 1024-pixel images affordable. IDM-VTON~\cite{idmvton}
 builds on two SDXL-sized networks, one for the person and one for the garment, and gives very good
 results, but it needs far more memory than a free GPU offers. CatVTON~\cite{catvton} takes the
 opposite route. It removes the second network and the text encoder altogether, and simply places the
-person and the garment side by side in one image, as described in Section~\ref{sec:models}.
+person and the garment side by side in one image, as described in Section~\ref{sec:catvton}.
+Because the person and garment share one self-attention space, CatVTON learns garment placement
+implicitly. That keeps it small enough for the free hardware available to us, which is the
+main reason we chose it.
 
-For outfit recommendation, most published systems learn compatibility from large fashion datasets.
-We did not have such data for occasions and weather, so we wrote the dress-code knowledge by hand and
-added CLIP~\cite{clip}, which can judge an image against a text description without any training on
-our data. This combination keeps every decision explainable.
+\paragraph{Human parsing, pose and segmentation.}
+Every try-on method needs to know which pixels belong to the clothing that will be replaced. DensePose~\cite{densepose}
+maps each body pixel to a body-part surface, and Self-Correction for Human Parsing (SCHP)~\cite{schp}
+labels pixels as hair, face, upper clothes, trousers and so on. CatVTON combines the two to build its
+clothing mask. Lighter models are useful outside the generator too: BlazePose~\cite{blazepose} finds 33
+body landmarks in real time on a CPU, and \unet~\cite{u2net}, a nested U-structure for salient object
+detection, separates a foreground object from its background without class labels. We use these two
+to check and clean the inputs before any GPU time is spent.
 
-\section{System Overview}
+\paragraph{Outfit recommendation and zero-shot vision--language models.}
+Most published outfit recommenders learn compatibility between garments, or between a garment and a
+setting, from large labelled fashion datasets. We had no such data for occasions and weather, so we
+wrote the dress-code knowledge by hand. To let the system look at the garment photo itself, we added
+CLIP~\cite{clip}, a vision--language model trained on image--text pairs, which can score an image
+against a text description such as ``formal clothes for a job interview'' without any training on our
+data. Combining rules with zero-shot scores keeps every decision explainable.
+
+\paragraph{Gap.} Try-on systems show how a garment looks but not whether it suits the situation, and
+recommenders suggest garments without showing them on the user. The open-source try-on demos we tried,
+including CatVTON's own, stop at the image. Our project connects the two: an explainable,
+context-aware recommender whose suggestions can be tried on in one step.
+
+\section{Problem Statement}
+\label{sec:problem}
+
+We address two coupled tasks.
+
+\paragraph{Task 1: virtual try-on.} Given a photo $I_p$ of a person, a photo $I_g$ of a garment and the
+garment's category $\tau\in\{\text{upper},\text{lower},\text{overall}\}$, produce an image $\hat I$ in which
+the same person wears the garment. Outside the region the garment covers, $\hat I$ should match $I_p$:
+the face, hair, hands, pose, body shape and background must not change. Inside it, the garment's colour,
+pattern, text and shape should be carried over faithfully and draped to the person's pose.
+
+\paragraph{Task 2: context-aware recommendation.} Given a catalogue $\mathcal G=\{g_1,\dots,g_N\}$ of
+garments and a context $c=(a, o, s, w, p)$, consisting of the wear line $a$ (menswear or womenswear), the
+occasion $o$ (one of 9), the setting $s$ (indoor or outdoor), the weather $w$ (one of 4) and optional
+colour, style and formality preferences $p$, return:
+\begin{itemize}
+\item a ranking of the suitable garments by a score $S(g,c)\in[0,1]$;
+\item for every ranked garment, a short explanation that agrees with its score;
+\item the garments that are clearly unsuitable (for example shorts for an interview), listed
+separately with a reason.
+\end{itemize}
+The user must be able to send any recommended garment straight to Task~1, and to ask whether a garment of
+their own suits the context.
+
+\paragraph{Constraints.} The problem is shaped as much by our constraints as by the tasks:
+\begin{enumerate}
+\item \emph{No local GPU capable of diffusion.} Our laptop has an RTX~3050 with 4\,GB of VRAM and
+7.6\,GB of RAM. The only GPUs available to us are free, time-limited Colab and Kaggle T4 sessions, which
+can disconnect.
+\item \emph{No training data for suitability.} There is no public dataset that labels garments by
+occasion and weather in a way we could train on, and we have no budget to train or fine-tune a try-on
+model.
+\item \emph{Uncontrolled inputs.} Users take photos at home: partial framing, cluttered
+backgrounds, poor light. The try-on models we found were trained on studio photos.
+\item \emph{Trust.} A recommendation is only useful if the user can see why it was made, so every
+score must be explainable, and the explanation must not contradict the score.
+\end{enumerate}
+
+\paragraph{Success criteria.} For Task~1: realistic results on front-facing photos, judged visually,
+with a response time of about one to two minutes, and memory that fits a T4. For Task~2: ranking
+quality on labelled scenarios, measured by Precision@5 and nDCG@5, and rankings that change with the
+context. For the system as a whole: clear messages instead of crashes when inputs or the server go
+wrong, verified by automated tests.
+
+\section{Proposed Method}
+\label{sec:method}
+
+\subsection{System Overview}
+\label{sec:overview}
 
 Fig.~\ref{fig:arch} shows the system. It is split across two machines because the diffusion model
 does not fit on our laptop (an RTX~3050 with 4\,GB of VRAM and 7.6\,GB of system RAM). The laptop runs
@@ -129,55 +219,56 @@ try-on model runs on a free Google Colab or Kaggle notebook with an NVIDIA T4 (1
 starts a small FastAPI server and exposes it through a Cloudflare quick tunnel, so the laptop reaches it
 over HTTPS with an API key.
 
-\begin{figure*}[t]
+\begin{figure}[t]
 \centering
+\resizebox{\linewidth}{!}{%
 \begin{tikzpicture}[
-  font=\footnotesize, >={Stealth[length=2mm]},
-  box/.style={draw=ourline, fill=ours, rounded corners=2pt, align=left, text width=4.1cm, minimum height=0.95cm, inner sep=3pt},
-  pbox/.style={draw=preline, fill=pre, line width=0.9pt, rounded corners=2pt, align=left, text width=4.1cm, minimum height=0.95cm, inner sep=3pt},
-  rbox/.style={draw=ourline, fill=ours, rounded corners=2pt, align=left, text width=4.2cm, minimum height=0.95cm, inner sep=3pt},
+  font=\scriptsize, >={Stealth[length=2mm]},
+  box/.style={draw=ourline, fill=ours, rounded corners=2pt, align=left, text width=3.35cm, minimum height=0.95cm, inner sep=3pt},
+  pbox/.style={draw=preline, fill=pre, line width=0.9pt, rounded corners=2pt, align=left, text width=3.35cm, minimum height=0.95cm, inner sep=3pt},
+  rbox/.style={draw=ourline, fill=ours, rounded corners=2pt, align=left, text width=3.35cm, minimum height=0.95cm, inner sep=3pt},
   lane/.style={draw=edge, dashed, rounded corners=4pt, inner sep=6pt},
   arr/.style={->, draw=edge, line width=0.6pt},
-  lbl/.style={font=\scriptsize\itshape, text=edge}
+  lbl/.style={font=\tiny\itshape, text=edge}
 ]
 % laptop column
 \node[box] (in) {\textbf{1. Inputs}\\person photo, garment photo};
 \node[box, below=0.45cm of in] (chk) {\textbf{2. Quality gate}\\validation, blur, light, pose rules};
-\node[box, below=0.45cm of chk] (seg) {\textbf{3. Background removal}\\\unet{} puts the garment on white};
+\node[box, below=0.45cm of chk] (seg) {\textbf{3. Background removal}\\\unet{}, garment on white};
 \node[box, below=0.45cm of seg] (res) {\textbf{7. Result}\\slider, occasion verdict, saving};
 % server column
-\node[box, right=2.6cm of in] (api) {\textbf{4. Job API (FastAPI)}\\queue, progress, API key};
-\node[box, below=0.45cm of api] (msk) {\textbf{5. Clothing mask}\\DensePose + SCHP (AutoMasker)};
-\node[pbox, below=0.45cm of msk] (cat) {\textbf{6. CatVTON diffusion}\\SD-1.5 UNet, fp16, 30 DDIM steps};
+\node[box, right=1.95cm of in] (api) {\textbf{4. Job API (FastAPI)}\\queue, progress, API key};
+\node[box, below=0.45cm of api] (msk) {\textbf{5. Clothing mask}\\DensePose + SCHP};
+\node[pbox, below=0.45cm of msk] (cat) {\textbf{6. CatVTON diffusion}\\SD-1.5 UNet, fp16, 30 steps};
 % recommender column
-\node[rbox, right=1.1cm of api] (ctx) {\textbf{A. Context}\\Men/Women, occasion, setting, weather};
-\node[rbox, below=0.45cm of ctx] (fac) {\textbf{B. Six factor scores}\\occasion, formality, weather, colour,\\style, CLIP};
+\node[rbox, right=0.75cm of api] (ctx) {\textbf{A. Context}\\Men/Women, occasion, setting, weather};
+\node[rbox, below=0.45cm of ctx] (fac) {\textbf{B. Six factor scores}\\occasion, formality, weather, colour, style, CLIP};
 \node[rbox, below=0.45cm of fac] (rank) {\textbf{C. Rank and explain}\\exclusions, weighted sum, sentences};
 % lanes
 \begin{scope}[on background layer]
-\node[lane, fit=(in)(res), label={[font=\footnotesize\bfseries, text=ink]above:Laptop (Streamlit, CPU)}] (L) {};
-\node[lane, fit=(api)(cat), label={[font=\footnotesize\bfseries, text=ink]above:GPU server (Colab/Kaggle T4)}] (G) {};
-\node[lane, fit=(ctx)(rank), label={[font=\footnotesize\bfseries, text=ink]above:Recommender (laptop)}] (Rc) {};
+\node[lane, fit=(in)(res), label={[font=\scriptsize\bfseries, text=ink]above:Laptop (Streamlit, CPU)}] (L) {};
+\node[lane, fit=(api)(cat), label={[font=\scriptsize\bfseries, text=ink]above:GPU server (Kaggle/Colab T4)}] (G) {};
+\node[lane, fit=(ctx)(rank), label={[font=\scriptsize\bfseries, text=ink]above:Recommender (laptop)}] (Rc) {};
 \end{scope}
 % arrows
 \draw[arr] (in) -- (chk);
 \draw[arr] (chk) -- (seg);
 \draw[arr] (seg.east) -- ++(0.55,0) |- (api.west);
-\node[lbl, align=center, anchor=south] at ($(api.west)+(-1.25,0.06)$) {HTTPS tunnel\\+ API key};
+\node[lbl, align=center, anchor=south] at ($(api.west)+(-0.92,0.06)$) {HTTPS tunnel\\+ API key};
 \draw[arr] (api) -- (msk);
 \draw[arr] (msk) -- (cat);
 \draw[arr] (cat.south) -- (cat.south |- res.east) -- (res.east);
-\node[lbl, anchor=south] at ($(res.east)+(1.25,0.06)$) {result + mask};
+\node[lbl, anchor=south] at ($(res.east)+(0.95,0.06)$) {result + mask};
 \draw[arr] (ctx) -- (fac);
 \draw[arr] (fac) -- (rank);
 \draw[arr] (rank.south) -- ($(rank.south |- L.south)+(0,-0.35)$) -| ([xshift=-0.35cm]L.west) |- (in.west);
 \node[lbl, anchor=north] at ($(cat.south |- L.south)+(0,-0.4)$) {``Try this on'': a recommended garment becomes the input of step 1};
-\end{tikzpicture}
+\end{tikzpicture}}
 \caption{Trycraz architecture. Blue boxes are our code (some call pretrained networks: MediaPipe in step 2,
 \unet{} in step 3, CLIP in step B). The orange box is the pretrained CatVTON generator, used unchanged.
 Steps 1--3 and 7 run on the laptop; steps 4--6 run on a free cloud GPU.}
 \label{fig:arch}
-\end{figure*}
+\end{figure}
 
 A try-on request goes through seven steps. The laptop validates and checks the photos, removes the
 garment background and uploads both images. The server queues the job, builds the clothing mask, runs
@@ -186,169 +277,8 @@ result next to the original photo and, if the user came from the recommender, ho
 suits the chosen occasion. Every real result is saved with its inputs and settings, so a past run can
 be shown even when the GPU session is offline.
 
-\section{Methodology}
-\label{sec:method}
-
-\subsection{Input Validation and Preprocessing}
-
-Every upload is checked before anything else: the file must exist, have an allowed extension, decode
-as an image, be at most 15\,MB, have its short side at least 256\,px and long side at most 8000\,px, and
-an aspect ratio of at most 3:1. EXIF rotation is applied and transparent images are flattened onto
-white. CatVTON works at 768$\times$1024 (3:4). We crop the person photo with exactly the same centre
-crop that CatVTON applies internally, and a unit test checks that the two agree pixel for pixel. This
-matters because the quality checks below must look at the same part of the photo that the model will see.
-Garment images are padded rather than cropped, so a sleeve or hem is never cut off.
-
-\subsection{Pose-Based Quality Gate}
-
-A try-on takes about a minute of shared GPU time, so it is worth catching bad photos first. We run the
-MediaPipe Pose Landmarker (BlazePose~\cite{blazepose}, lite model) on the cropped photo. It returns 33
-body landmarks with a visibility score each. On top of these we wrote the geometric rules in
-Table~\ref{tab:rules}. Errors mean the try-on is very likely to fail; warnings mean it may degrade.
-Neither blocks the user, because the rules are heuristics and the user may know better.
-
-\begin{table}[t]
-\caption{Quality rules on the 3:4 crop the model sees}
-\label{tab:rules}
-\centering
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.2cm}>{\raggedright\arraybackslash}p{3.9cm}l@{}}
-\toprule
-Check & Rule & Level\\
-\midrule
-Missing body parts & shoulders (and hips, knees or ankles, by garment type) not visible, $v<0.5$ & error\\
-Cut off at hips & hip line $y_\text{hip}/H > 0.85$ & error\\
-Low hips & $0.75 < y_\text{hip}/H \le 0.85$ & warning\\
-Side view & shoulder width / torso length $< 0.35$ & warning\\
-Back view & left shoulder appears left of right shoulder & warning\\
-Hands on torso & a wrist inside the shoulder--hip box & note\\
-Person too small & visible landmarks span $<30\%$ of $H$ & warning\\
-Blur & variance of Laplacian $<35$ (at 512\,px) & warning\\
-Too dark / bright & mean luminance $<60$ or $>225$ & warning\\
-\bottomrule
-\end{tabular}
-\end{table}
-
-The hip rule was not in our first design. It came out of the failure analysis in
-Section~\ref{sec:diag}, where photos that ended at the hips produced grey filler below the garment.
-The blur threshold was first set to 60, but sharp studio photos scored as low as 50, so we recalibrated
-it on 20 images: sharp originals scored 50--1562 and the same images blurred with $\sigma=1.5$\,px scored
-2--28. A threshold of 35 separates the two groups.
-
-\subsection{Garment Background Removal}
-
-CatVTON was trained on retailer product photos on plain white backgrounds. Our garment photos were
-taken on beds, floors and doors, and in one run the red bedsheet under a pair of black trousers leaked
-into the result. We therefore run \unet~\cite{u2net}, a salient object segmentation network, on every
-garment photo. The garment is cut out, placed on white and cropped to its bounding box. The same step
-is applied when we build the catalogue and when a user uploads a garment, and the user can switch it off.
-
-\subsection{Try-On Server}
-
-The server wraps CatVTON in a small job API: \texttt{POST /jobs} uploads the two images and the settings
-and returns a job id at once, \texttt{GET /jobs/\{id\}} returns the stage (queued, masking, diffusion,
-done) and the current denoising step, and \texttt{/health} reports the GPU and model state. We count
-progress by wrapping the scheduler's step function. This job design is not an extra: the Cloudflare
-quick tunnel closes any request that runs longer than about 100\,s, and a try-on plus queueing can take
-longer than that. One job runs at a time and others wait in the queue. Each error has its own status
-code (for example 401 for a wrong key, 422 for bad settings, 507 for GPU out-of-memory), which the
-client turns into a plain message. The notebook is generated from the server source by a script, and
-a test checks that the notebook contains the current code byte for byte.
-
-\subsection{Context-Aware Recommender}
-
-\emph{Knowledge base.} All dress-code knowledge lives in one YAML file: 9 occasions (casual outing,
-college, office, formal meeting, interview, wedding, party, outdoor sports, travel), 4 weather types
-(hot, mild, cold, rainy), 26 garment types and 16 colour names. Each occasion has a target formality on
-a 1--5 scale, preferred styles, discouraged and excluded garment types, an optional colour palette and a
-CLIP prompt. Each weather type has a target warmth for indoors and outdoors, and flags for
-breathability or water resistance. These values are our own judgement, not learned from data, and are
-kept in one file so they can be read and criticised.
-
-\emph{Context processing.} The user's choices become a target profile. The target formality is the
-occasion's value shifted by the user's ``more casual / more formal'' slider and clipped to [1, 5]. The
-target warmth depends on the setting, and water resistance only counts outdoors.
-
-\emph{Scoring.} Each garment $g$ gets six factor values $f_k(g,c)\in[0,1]$ for the context $c$, and the
-score is their weighted sum
-\begin{equation}
-S(g,c)=\sum_{k} w_k\, f_k(g,c),\qquad \sum_k w_k = 1,
-\end{equation}
-with $w$ = 0.30 (occasion), 0.20 (formality), 0.20 (weather), 0.10 (colour), 0.05 (style) and 0.15 (CLIP).
-The occasion factor is 1 if the garment is tagged as a primary choice for the occasion, 0.6 for a
-secondary choice, 0.2 otherwise, and 0 for a discouraged type. Formality and weather are distances on
-their scales:
-\begin{align}
-f_\text{form} &= \max\!\left(0,\,1-\tfrac{|\phi_g-\phi^*|}{4}\right),\\
-f_\text{weather} &= 0.7\max\!\left(0,\,1-\tfrac{|\theta_g-\theta^*|}{3}\right)+0.3\,s_g,
-\end{align}
-where $\phi$ is formality, $\theta$ is warmth, the star marks the target, and $s_g$ is 1 if the
-garment has the property the weather asks for (breathable when hot, water resistant in outdoor rain).
-Colour uses the user's preferred colours, or the occasion's palette if none are given. When a factor
-has nothing to judge, for example no style preference, it is set to a neutral 0.5 and left out of the
-explanation. Hard exclusions remove items before ranking: garments outside the chosen categories or
-the chosen wear line (unisex items always pass), and types excluded for the occasion, such as shorts
-for an interview. These are listed separately as ``not suitable''.
-
-\emph{CLIP factor.} The attribute factors only know what the catalogue says about a garment. CLIP
-ViT-B/32~\cite{clip} looks at the photo itself. We embed every catalogue image once. For each occasion
-and weather type we embed its prompt with three templates (``a photo of \ldots'', ``a product photo of
-\ldots'', ``a photo of a garment: \ldots'') and average them, which is called prompt ensembling. A
-softmax over cosine similarities gives probabilities $p_\text{occ}$ and $p_\text{wx}$, and
-\begin{equation}
-f_\text{clip}=\tfrac12\left(\frac{p_\text{occ}(o)}{\max_{o'} p_\text{occ}(o')}+\frac{p_\text{wx}(w)}{\max_{w'} p_\text{wx}(w')}\right),
-\end{equation}
-so a garment scores 1 when CLIP finds it most typical of the chosen occasion and weather. If CLIP
-cannot be loaded, its weight is shared among the other factors and the app keeps working.
-
-\emph{Explanations.} Each factor returns its value together with a positive and a negative phrase. A
-phrase is used only if the value is at least 0.7 (a reason) or at most 0.3 (a caution), and the verdict
-follows the total: ``Recommended'' at 0.70 or above, ``A reasonable option'' at 0.50 or above, and
-``Weak match'' below. Because the sentence is built from the same numbers as the score, it cannot
-praise a garment for something that scored badly. An early version did exactly that, which is why we
-made this a tested rule (Section~\ref{sec:tests}).
-
-\emph{User's own garments.} For an uploaded garment we estimate its attributes from the photo. CLIP
-picks the garment type from 26 classes (with three flat-lay style templates), and the main colours
-come from k-means ($k=3$) on the garment pixels in CIELAB space. Pixels within $\Delta E=18$ of the
-border colour are treated as background, and cluster centres are named after the nearest of our 16
-colours. The estimated garment is then scored like a catalogue item, and the app labels the result as
-an estimate.
-
-\subsection{Catalogue}
-
-We built a 52-garment demo catalogue from the CC0 Clothing Dataset by A.~Grigorev: 36 tops and jackets,
-10 bottoms and 6 dresses, of which 39 are unisex and 13 womenswear. Each item has a type, try-on
-category, formality, warmth, breathability, water resistance, colours, styles, primary and secondary
-occasions and a wear line. Annotations were made by hand and are marked as such. Sample person photos
-are from Unsplash (free licence).
-
-\subsection{Application}
-
-The Streamlit app has four pages: Home, Virtual Try-On, Recommendations and About the Project.
-Recommendations first asks whether the user is shopping for men or women; without this step the list
-mixed both. Each result card shows the garment, the verdict, the score, a one-line explanation, a
-``Why this score'' table of the six factors and a ``Try this on'' button that opens the try-on page
-with that garment and its type already selected (Fig.~\ref{fig:app}). The try-on page shows the
-quality report before generation, a progress bar during it, and afterwards a comparison slider, the
-occasion verdict, downloads and the region the model repainted. A section on the Recommendations page
-lets the user upload their own garment and see whether it suits the chosen context.
-
-\begin{figure*}[t]
-\centering
-\includegraphics[width=0.493\textwidth]{figs/app_form.jpg}\hfill
-\includegraphics[width=0.493\textwidth]{figs/app_cards.jpg}
-\caption{The Recommendations page. Left: the user picks Men or Women, then the occasion, setting and
-weather (here a job interview, indoors, hot). Right: ranked cards with verdict, score, explanation,
-a breakdown of the six factors and a button that opens the garment in the try-on page.}
-\label{fig:app}
-\end{figure*}
-
-\section{Models}
-\label{sec:models}
-
-\subsection{CatVTON: the Try-On Generator}
-
+\subsection{Try-On Model: CatVTON}
+\label{sec:catvton}
 CatVTON~\cite{catvton} is a Stable Diffusion 1.5 inpainting UNet~\cite{ldm} adapted for try-on. It works in
 four steps.
 \begin{enumerate}
@@ -411,7 +341,134 @@ IDM-VTON & diffusion, 2 SDXL & tops* & GPU memory\\
 \end{tabular}
 \end{table}
 
-\subsection{Supporting Models}
+\subsection{Input Validation and Preprocessing}
+
+Every upload is checked before anything else: the file must exist, have an allowed extension, decode
+as an image, be at most 15\,MB, have its short side at least 256\,px and long side at most 8000\,px, and
+an aspect ratio of at most 3:1. EXIF rotation is applied and transparent images are flattened onto
+white. CatVTON works at 768$\times$1024 (3:4). We crop the person photo with exactly the same centre
+crop that CatVTON applies internally, and a unit test checks that the two agree pixel for pixel. This
+matters because the quality checks below must look at the same part of the photo that the model will see.
+Garment images are padded rather than cropped, so a sleeve or hem is never cut off.
+
+\subsection{Pose-Based Quality Gate}
+
+A try-on takes about a minute of shared GPU time, so it is worth catching bad photos first. We run the
+MediaPipe Pose Landmarker (BlazePose~\cite{blazepose}, lite model) on the cropped photo. It returns 33
+body landmarks with a visibility score each. On top of these we wrote the geometric rules in
+Table~\ref{tab:rules}. Errors mean the try-on is very likely to fail; warnings mean it may degrade.
+Neither blocks the user, because the rules are heuristics and the user may know better.
+
+\begin{table}[t]
+\caption{Quality rules on the 3:4 crop the model sees}
+\label{tab:rules}
+\centering
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.3cm}>{\raggedright\arraybackslash}p{7.6cm}l@{}}
+\toprule
+Check & Rule & Level\\
+\midrule
+Missing body parts & shoulders (and hips, knees or ankles, by garment type) not visible, $v<0.5$ & error\\
+Cut off at hips & hip line $y_\text{hip}/H > 0.85$ & error\\
+Low hips & $0.75 < y_\text{hip}/H \le 0.85$ & warning\\
+Side view & shoulder width / torso length $< 0.35$ & warning\\
+Back view & left shoulder appears left of right shoulder & warning\\
+Hands on torso & a wrist inside the shoulder--hip box & note\\
+Person too small & visible landmarks span $<30\%$ of $H$ & warning\\
+Blur & variance of Laplacian $<35$ (at 512\,px) & warning\\
+Too dark / bright & mean luminance $<60$ or $>225$ & warning\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The hip rule was not in our first design. It came out of the failure analysis in
+Section~\ref{sec:diag}, where photos that ended at the hips produced grey filler below the garment.
+The blur threshold was first set to 60, but sharp studio photos scored as low as 50, so we recalibrated
+it on 20 images: sharp originals scored 50--1562 and the same images blurred with $\sigma=1.5$\,px scored
+2--28. A threshold of 35 separates the two groups.
+
+\subsection{Garment Background Removal}
+
+CatVTON was trained on retailer product photos on plain white backgrounds. Our garment photos were
+taken on beds, floors and doors, and in one run the red bedsheet under a pair of black trousers leaked
+into the result. We therefore run \unet~\cite{u2net}, a salient object segmentation network, on every
+garment photo. The garment is cut out, placed on white and cropped to its bounding box. The same step
+is applied when we build the catalogue and when a user uploads a garment, and the user can switch it off.
+
+\subsection{Try-On Server}
+
+The server wraps CatVTON in a small job API: \texttt{POST /jobs} uploads the two images and the settings
+and returns a job id at once, \texttt{GET /jobs/\{id\}} returns the stage (queued, masking, diffusion,
+done) and the current denoising step, and \texttt{/health} reports the GPU and model state. We count
+progress by wrapping the scheduler's step function. This job design is not an extra: the Cloudflare
+quick tunnel closes any request that runs longer than about 100\,s, and a try-on plus queueing can take
+longer than that. One job runs at a time and others wait in the queue. Each error has its own status
+code (for example 401 for a wrong key, 422 for bad settings, 507 for GPU out-of-memory), which the
+client turns into a plain message. The notebook is generated from the server source by a script, and
+a test checks that the notebook contains the current code byte for byte.
+
+\subsection{Context-Aware Recommender}
+\label{sec:rec}
+
+\emph{Knowledge base.} All dress-code knowledge lives in one YAML file: 9 occasions (casual outing,
+college, office, formal meeting, interview, wedding, party, outdoor sports, travel), 4 weather types
+(hot, mild, cold, rainy), 26 garment types and 16 colour names. Each occasion has a target formality on
+a 1--5 scale, preferred styles, discouraged and excluded garment types, an optional colour palette and a
+CLIP prompt. Each weather type has a target warmth for indoors and outdoors, and flags for
+breathability or water resistance. These values are our own judgement, not learned from data, and are
+kept in one file so they can be read and criticised.
+
+\emph{Context processing.} The user's choices become a target profile. The target formality is the
+occasion's value shifted by the user's ``more casual / more formal'' slider and clipped to [1, 5]. The
+target warmth depends on the setting, and water resistance only counts outdoors.
+
+\emph{Scoring.} Each garment $g$ gets six factor values $f_k(g,c)\in[0,1]$ for the context $c$, and the
+score is their weighted sum
+\begin{equation}
+S(g,c)=\sum_{k} w_k\, f_k(g,c),\qquad \sum_k w_k = 1,
+\end{equation}
+with $w$ = 0.30 (occasion), 0.20 (formality), 0.20 (weather), 0.10 (colour), 0.05 (style) and 0.15 (CLIP).
+The occasion factor is 1 if the garment is tagged as a primary choice for the occasion, 0.6 for a
+secondary choice, 0.2 otherwise, and 0 for a discouraged type. Formality and weather are distances on
+their scales:
+\begin{align}
+f_\text{form} &= \max\!\left(0,\,1-\tfrac{|\phi_g-\phi^*|}{4}\right),\\
+f_\text{weather} &= 0.7\max\!\left(0,\,1-\tfrac{|\theta_g-\theta^*|}{3}\right)+0.3\,s_g,
+\end{align}
+where $\phi$ is formality, $\theta$ is warmth, the star marks the target, and $s_g$ is 1 if the
+garment has the property the weather asks for (breathable when hot, water resistant in outdoor rain).
+Colour uses the user's preferred colours, or the occasion's palette if none are given. When a factor
+has nothing to judge, for example no style preference, it is set to a neutral 0.5 and left out of the
+explanation. Hard exclusions remove items before ranking: garments outside the chosen categories or
+the chosen wear line (unisex items always pass), and types excluded for the occasion, such as shorts
+for an interview. These are listed separately as ``not suitable''.
+
+\emph{CLIP factor.} The attribute factors only know what the catalogue says about a garment. CLIP
+ViT-B/32~\cite{clip} looks at the photo itself. We embed every catalogue image once. For each occasion
+and weather type we embed its prompt with three templates (``a photo of \ldots'', ``a product photo of
+\ldots'', ``a photo of a garment: \ldots'') and average them, which is called prompt ensembling. A
+softmax over cosine similarities gives probabilities $p_\text{occ}$ and $p_\text{wx}$, and
+\begin{equation}
+f_\text{clip}=\tfrac12\left(\frac{p_\text{occ}(o)}{\max_{o'} p_\text{occ}(o')}+\frac{p_\text{wx}(w)}{\max_{w'} p_\text{wx}(w')}\right),
+\end{equation}
+so a garment scores 1 when CLIP finds it most typical of the chosen occasion and weather. If CLIP
+cannot be loaded, its weight is shared among the other factors and the app keeps working.
+
+\emph{Explanations.} Each factor returns its value together with a positive and a negative phrase. A
+phrase is used only if the value is at least 0.7 (a reason) or at most 0.3 (a caution), and the verdict
+follows the total: ``Recommended'' at 0.70 or above, ``A reasonable option'' at 0.50 or above, and
+``Weak match'' below. Because the sentence is built from the same numbers as the score, it cannot
+praise a garment for something that scored badly. An early version did exactly that, which is why we
+made this a tested rule (Section~\ref{sec:tests}).
+
+\emph{User's own garments.} For an uploaded garment we estimate its attributes from the photo. CLIP
+picks the garment type from 26 classes (with three flat-lay style templates), and the main colours
+come from k-means ($k=3$) on the garment pixels in CIELAB space. Pixels within $\Delta E=18$ of the
+border colour are treated as background, and cluster centres are named after the nearest of our 16
+colours. The estimated garment is then scored like a catalogue item, and the app labels the result as
+an estimate.
+
+\subsection{Supporting Pretrained Models}
 
 Table~\ref{tab:models} lists every pretrained network in the system. None was retrained. MediaPipe and
 CLIP run on the laptop CPU; CLIP's first load downloads about 600\,MB and takes 149\,s once, after which
@@ -422,7 +479,7 @@ analysing one garment takes 0.25--0.9\,s.
 \label{tab:models}
 \centering
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}p{2.45cm}p{3.55cm}l@{}}
+\begin{tabular}{@{}p{3.4cm}p{6.6cm}l@{}}
 \toprule
 Model & Role in Trycraz & Runs on\\
 \midrule
@@ -436,14 +493,14 @@ CLIP ViT-B/32 & occasion score, garment type & laptop CPU\\
 \end{tabular}
 \end{table}
 
-\section{Optimization}
+\subsection{Optimization}
 \label{sec:opt}
 
 Since we did not train any network, there is no optimizer or loss of our own to report. Our
 optimization work was of three other kinds: making a large model run fast and within memory on free
 hardware, calibrating the hand-set thresholds on real failures, and keeping the evaluation honest.
 
-\subsection{Inference Settings}
+\paragraph{Inference settings.}
 
 \begin{itemize}
 \item \emph{Half precision.} The T4 has no fast bfloat16, so all networks run in float16. This halves
@@ -458,7 +515,7 @@ background are untouched.
 \item \emph{Fixed seed.} Seed 42 makes runs repeatable, which was essential for the diagnosis below.
 \end{itemize}
 
-\subsection{System-Level Choices}
+\paragraph{System-level choices.}
 
 The job API with polling exists because of the tunnel's request limit. Model weights are loaded once
 per session (86\,s with a warm cache) and kept in GPU memory. On the laptop, CLIP embeddings of the
@@ -468,7 +525,7 @@ CatVTON commit are pinned, which mattered because newer PyTorch changed the defa
 \texttt{torch.load} and broke SCHP's checkpoint loader; we load only the official checkpoints with the
 old behaviour.
 
-\subsection{Calibration and the Weights}
+\paragraph{Calibration and the weights.}
 
 The two thresholds that matter most were set from measurements, not guessed: the blur threshold from
 20 sharp and blurred images, and the hip threshold from the photos that failed (hips at 0.89 and 0.91
@@ -477,7 +534,37 @@ were set by hand \emph{before} the evaluation and were deliberately not tuned on
 With only twelve scenarios, tuning on them would mostly fit the noise in our own labels and make the
 reported numbers look better than they are.
 
+\subsection{Catalogue and Application}
+
+We built a 52-garment demo catalogue from the CC0 Clothing Dataset by A.~Grigorev: 36 tops and jackets,
+10 bottoms and 6 dresses, of which 39 are unisex and 13 womenswear. Each item has a type, try-on
+category, formality, warmth, breathability, water resistance, colours, styles, primary and secondary
+occasions and a wear line. Annotations were made by hand and are marked as such. Sample person photos
+are from Unsplash (free licence).
+
+
+The Streamlit app has four pages: Home, Virtual Try-On, Recommendations and About the Project.
+Recommendations first asks whether the user is shopping for men or women; without this step the list
+mixed both. Each result card shows the garment, the verdict, the score, a one-line explanation, a
+``Why this score'' table of the six factors and a ``Try this on'' button that opens the try-on page
+with that garment and its type already selected (Fig.~\ref{fig:app}). The try-on page shows the
+quality report before generation, a progress bar during it, and afterwards a comparison slider, the
+occasion verdict, downloads and the region the model repainted. A section on the Recommendations page
+lets the user upload their own garment and see whether it suits the chosen context.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.493\textwidth]{figs/app_form.jpg}\hfill
+\includegraphics[width=0.493\textwidth]{figs/app_cards.jpg}
+\caption{The Recommendations page. Left: the user picks Men or Women, then the occasion, setting and
+weather (here a job interview, indoors, hot). Right: ranked cards with verdict, score, explanation,
+a breakdown of the six factors and a button that opens the garment in the try-on page.}
+\label{fig:app}
+\end{figure}
+
+
 \section{Experiments and Results}
+\label{sec:exp}
 
 \subsection{Setup}
 
@@ -541,7 +628,7 @@ V1--V6 & six catalogue garments (bg.\ removed) & all & 6/6 success\\
 \end{tabular}
 \end{table}
 
-\begin{figure*}[t]
+\begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figs/tryon_grid.jpg}
 \caption{Validation try-ons V1--V6 generated by CatVTON on a T4 through our pipeline. Rows: input
@@ -549,7 +636,7 @@ person, garment after our background removal, result. Columns: navy blazer, whit
 T-shirt (all upper body), black formal trousers, light blue jeans (lower body) and a royal blue sheath
 dress (full outfit).}
 \label{fig:tryon}
-\end{figure*}
+\end{figure}
 
 \subsection{Failure Diagnosis}
 \label{sec:diag}
@@ -563,7 +650,7 @@ at a time, keeping the seed and settings fixed (Table~\ref{tab:diag}).
 \label{tab:diag}
 \centering
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}>{\raggedright\arraybackslash}p{1.9cm}>{\raggedright\arraybackslash}p{2.95cm}>{\raggedright\arraybackslash}p{2.9cm}@{}}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.3cm}>{\raggedright\arraybackslash}p{5.1cm}>{\raggedright\arraybackslash}p{4.9cm}@{}}
 \toprule
 Hypothesis & Test & Evidence\\
 \midrule
@@ -575,7 +662,7 @@ Why this photo? & MediaPipe hip height on the 3:4 crop & failing: 0.89, 0.91; wo
 \end{tabular}
 \end{table}
 
-\begin{figure*}[t]
+\begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figs/diag_hips.jpg}\\[1pt]
 \tl{(a) input}\tl{(b) garment}\tl{(c) R2 result}\tl{(d) bg.\ removed}\tl{(e) other person}\tl{(f) other person}\tlast{(g) known-good tee}\\[4pt]
@@ -586,7 +673,7 @@ its background (c, d), works on two other people (e, f), and even a T-shirt that
 in the lower half (g). Bottom: the red bedsheet behind the trousers leaks into the result (j); after
 background removal the trousers come out clean (l).}
 \label{fig:diag}
-\end{figure*}
+\end{figure}
 
 The photo of this man ends at the hips, so the region to repaint touches the bottom edge of the image.
 For a long garment there is no body below the hem to anchor it, and the model fills the missing part
@@ -625,7 +712,7 @@ CLIP only & 0.667 & 0.691\\
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{figs/ndcg_per_scenario.pdf}
+\includegraphics[width=0.62\linewidth]{figs/ndcg_per_scenario.pdf}
 \caption{nDCG@5 per scenario for the three configurations. The hybrid is best or tied in 8 of 12
 scenarios. In Party, Travel, Office tops and Office dresses one signal alone does better.}
 \label{fig:ndcg}
@@ -678,12 +765,13 @@ server's job life-cycle and every error code, the laptop client against a real l
 rules on synthetic landmarks, the recommender's behaviour in typical scenarios, the metrics against
 hand-computed values and the four app pages. One test generates explanations for all 9 occasions and 4
 weather types and checks that no stated reason contains negative wording, which guards the bug mentioned
-in Section~\ref{sec:method}. CatVTON's own code was also run end to end with randomly initialised weights
+in Section~\ref{sec:rec}. CatVTON's own code was also run end to end with randomly initialised weights
 on the CPU, which confirmed that it works on Python 3.12 before we spent any GPU time. Against the real
 server, a wrong API key, an unreachable URL and a queued second request all produced the intended
 messages.
 
-\section{Discussion}
+\subsection{Discussion and Limitations}
+\label{sec:disc}
 
 \emph{What worked.} The split between a laptop and a free cloud GPU made a 899\,M-parameter model usable
 without any lab hardware, at the cost of about a minute per image and a session that has to be
@@ -722,7 +810,9 @@ T4; have a second person label the scenarios independently and report the agreem
 own clothes on a plain background to replace the low-resolution catalogue images; and add a short
 user study in which people rate realism and suitability.
 
-\section{Conclusion}
+
+\section{Conclusions}
+\label{sec:concl}
 
 Trycraz shows that realistic virtual try-on and context-aware recommendation can be combined in one
 working system built on free hardware. A pretrained CatVTON model generates the images on a cloud T4 in
@@ -738,6 +828,8 @@ labels, and they are the first things we would add.
 \emph{Code availability.} The full source code, setup guide, test suite and evaluation scripts are
 public at \url{https://github.com/CrazAzartto/trycraz-virtual-tryon}.
 
+
+{\small
 \begin{thebibliography}{9}
 
 \bibitem{catvton}
@@ -777,5 +869,5 @@ A.~Radford \emph{et al.}, ``Learning transferable visual models from natural lan
 in \emph{Proc. ICML}, 2021, pp. 8748--8763.
 
 \end{thebibliography}
-
+}
 \end{document}
