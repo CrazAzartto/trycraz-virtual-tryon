@@ -54,7 +54,8 @@ steps with a peak of 4.89\,GB of GPU memory. Our first real runs had two clear f
 them one hypothesis at a time showed that a photo cut off at the hips, not the garment, was the cause.
 After adding a framing rule and background removal, all six validation try-ons succeeded. On twelve
 labelled scenarios the hybrid recommender reaches a mean P@5 of 0.833 and nDCG@5 of 0.830, higher
-than either attribute rules (0.767/0.751) or CLIP alone (0.667/0.691).
+than either attribute rules (0.767/0.751) or CLIP alone (0.667/0.691). The code, documentation and
+results are available at \url{https://github.com/CrazAzartto/trycraz-virtual-tryon}.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -90,7 +91,7 @@ including a rule we derived from a real failure: photos cut off at the hips;
 \item a hybrid, explainable recommender whose six factor scores produce both the ranking and the
 explanation, so the two can never disagree;
 \item an honest evaluation: timing and memory on real hardware, a hypothesis-by-hypothesis failure
-analysis, ranking metrics with an ablation, and 167 automated tests.
+analysis, ranking metrics with an ablation, and 166 automated tests.
 \end{itemize}
 
 \section{Related Work}
@@ -663,7 +664,7 @@ Main colour, k-means name & 26/52 (50\%) & 30/52 (58\%)\\
 \subsection{Software Testing}
 \label{sec:tests}
 
-The project has 167 automated tests, and all pass on the laptop and on Linux. They cover input
+The project has 166 automated tests, and all pass on the laptop and on Linux. They cover input
 validation with broken and unusual files, the crop arithmetic against CatVTON's own function, the
 server's job life-cycle and every error code, the laptop client against a real local server, the pose
 rules on synthetic landmarks, the recommender's behaviour in typical scenarios, the metrics against
@@ -725,6 +726,9 @@ hybrid recommender, which adds CLIP's view of the photo to hand-written dress-co
 P@5 of 0.833 and nDCG@5 of 0.830, better than either part alone, and explains every score from the same
 numbers that produced it. The main gaps are evaluation gaps, namely paired image metrics and independent
 labels, and they are the first things we would add.
+
+\emph{Code availability.} The full source code, setup guide, test suite and evaluation scripts are
+public at \url{https://github.com/CrazAzartto/trycraz-virtual-tryon}.
 
 \begin{thebibliography}{9}
 
