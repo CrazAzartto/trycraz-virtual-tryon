@@ -1,0 +1,15 @@
+# Laptop application (Streamlit UI + recommender + quality checks).
+# The try-on model does NOT run here; it runs on the GPU server (see tryon_server/).
+# Lower bounds are the minimum we rely on; the exact tested versions are in requirements.lock.txt.
+
+streamlit>=1.40          # st.navigation multipage API
+pillow>=10.3
+numpy>=1.26
+opencv-python-headless>=4.9
+pyyaml>=6.0
+requests>=2.31
+mediapipe>=0.10.14       # Pose landmarker (Tasks API) for the input-quality gate
+torch>=2.3               # On Windows the PyPI wheel is CPU-only, which is what we want for CLIP
+transformers>=4.44       # CLIP model + processor
+rembg>=2.0.50            # U^2-Net garment background removal (MIT)
+onnxruntime>=1.17        # runtime for rembg's ONNX models

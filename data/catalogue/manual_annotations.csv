@@ -1,0 +1,53 @@
+source_file,name,garment_type,colours,pattern,styles,formality,warmth,wear_line,dataset_label
+T-Shirt__0fc3fbae-1ce6-47c3-b183-0d12bf11914f.jpg,White graphic T-shirt,t_shirt,white,graphic,,,,unisex,T-Shirt
+T-Shirt__29d44695-c6b6-4b76-8ac9-12032990ba5f.jpg,Grey printed T-shirt,t_shirt,grey,printed,,,,unisex,T-Shirt
+T-Shirt__91ebc326-3907-45da-9c62-354eb972817b.jpg,Navy striped T-shirt,t_shirt,navy;white,striped,,,,unisex,T-Shirt
+T-Shirt__bb140894-5f33-4e7c-8746-0be253a442cf.jpg,Charcoal plain T-shirt,t_shirt,grey,solid,,,,unisex,T-Shirt
+T-Shirt__d52dac36-f287-4d41-bd6f-fdae73876fbb.jpg,Yellow sports T-shirt,t_shirt,yellow,solid,casual;sporty,,,unisex,T-Shirt
+Shirt__04d651a3-4c1b-410c-9b92-d046fe6a33ba.jpg,Pink formal shirt,shirt_formal,pink,solid,,,,unisex,Shirt
+Shirt__2b3a5050-1533-4f69-a732-88e102b8e89d.jpg,White pinstripe formal shirt,shirt_formal,white,striped,,,,unisex,Shirt
+Shirt__dc5a3af4-733f-4f4c-95e4-7da9b430397d.jpg,White formal shirt,shirt_formal,white,solid,,,,unisex,Shirt
+Shirt__4776b9e7-efc0-40e6-8da1-b5f22d011ca8.jpg,Black-white check flannel shirt,shirt_casual,black;white,checked,,,2.5,unisex,Shirt
+Shirt__39420559-56c9-4c0f-bb74-614bd0a3ddaa.jpg,Green check short-sleeve shirt,shirt_casual,green;white,checked,,,,unisex,Shirt
+Shirt__ecf9e2cb-7ad2-4fae-918e-b96a6b208dcf.jpg,White short-sleeve shirt,shirt_casual,white,solid,,,,unisex,Shirt
+Blazer__d9345829-4806-4cb5-ab25-85fb4e25595d.jpg,Navy blazer,blazer,navy,solid,,,,unisex,Blazer
+Blazer__f35f7caa-348c-45fd-9579-406230070e11.jpg,Grey blazer,blazer,grey,solid,,,,unisex,Blazer
+Blazer__ff80eb06-1a97-4a64-8f99-fda498c3ce83.jpg,Maroon velvet jacket,blazer,maroon,textured,formal;party;festive,4.0,,unisex,Blazer
+Blazer__ec6e46ad-9be8-482d-b67a-8371bbf43326.jpg,Brown leather jacket,leather_jacket,brown,solid,,,,unisex,Blazer
+Blazer__1d0b7c61-dbeb-4830-9012-fc6034d92d22.jpg,Dark denim jacket,denim_jacket,blue,solid,,,,unisex,Blazer
+Hoodie__3aa1b6a5-a2bf-42d9-a5e8-d53aa3bbd9b4.jpg,Blue printed hoodie,hoodie,blue,graphic,,,,unisex,Hoodie
+Hoodie__d7f760bd-07f5-419b-a807-ce4d34009206.jpg,Black zip hoodie,hoodie,black,solid,,,,unisex,Hoodie
+Hoodie__6edf8ea5-3b1d-4974-b65e-2b1ee2ccd9b1.jpg,White zip hoodie,hoodie,white,solid,,,,unisex,Hoodie
+Polo__bd78442b-6aa4-469f-91e3-f787c09cf814.jpg,Green polo,polo,green,solid,,,,unisex,Polo
+Polo__718f71d8-3ff4-462c-8348-e35c5439e9bb.jpg,Lavender-blue polo,polo,light_blue,solid,,,,unisex,Polo
+Polo__a1bfb2ab-f92a-45a8-a57d-5406d119b180.jpg,Navy polo,polo,navy,solid,,,,unisex,Polo
+Longsleeve__20e44d00-fc8c-46d9-9349-c931850ec57a.jpg,Black turtleneck sweater,sweater,black,solid,smart_casual;business,3.0,,unisex,Longsleeve
+Longsleeve__ad517de5-8aad-4bc1-abf7-1ed07bd78cfe.jpg,Blue knit sweater,sweater,blue,textured,,,,unisex,Longsleeve
+Longsleeve__d1ee3196-3069-4bd9-8a36-507bc2302d14.jpg,Cream sweater,sweater,beige,solid,,,,unisex,Longsleeve
+Longsleeve__8a3b06d4-6722-490e-85c9-de0eb834883d.jpg,Grey sweater,sweater,grey,solid,,,,unisex,Longsleeve
+Outwear__1fe43e89-0e78-4667-881b-3feb27a63ce3.jpg,Blue puffer jacket,puffer_jacket,blue,solid,,,,unisex,Outwear
+Outwear__d29d1b88-0268-43cb-9674-cde9cb1e4922.jpg,Black hooded puffer jacket,puffer_jacket,black,solid,,,,unisex,Outwear
+Outwear__e0f22daa-fb95-490b-85a5-2cb85a5109db.jpg,Red bomber jacket,jacket,red,solid,,,,unisex,Outwear
+Outwear__d7c67097-288d-4d10-b6cb-11d97c1507b2.jpg,Grey quilted jacket,jacket,grey,textured,,,,unisex,Outwear
+Outwear__459ec559-7f45-4906-95d7-d449d5eadfdf.jpg,Maroon outdoor shell jacket,rain_jacket,maroon,solid,,,,unisex,Outwear
+Blouse__d5eeaaed-97fe-4fea-a3cb-17a086cc8167.jpg,White wrap blouse,blouse,white,solid,,,,womenswear,Blouse
+Blouse__9568b507-e113-4670-ae39-30a444e41cac.jpg,Black blouse,blouse,black,solid,business;formal,3.5,,womenswear,Blouse
+Blouse__0ef80b69-2c18-435d-b091-91f401e01ed4.jpg,Maroon floral blouse,blouse,maroon,printed,,,,womenswear,Blouse
+Top__e56c1cd4-4852-4310-ae2c-9bcaf7bab68b.jpg,Black camisole,top,black,solid,casual;party,,,womenswear,Top
+Top__e47d3011-0c71-437f-9c85-0b53d95b6569.jpg,Pink sequin top,top,pink,textured,party;festive,3.0,,womenswear,Top
+Pants__801458be-449f-45eb-9101-62e03a7a77c3.jpg,Grey formal trousers,trousers_formal,grey,solid,,,,unisex,Pants
+Pants__aed4d957-1f38-4d9b-a5a9-ed81a70986a8.jpg,Black formal trousers,trousers_formal,black,solid,,,,unisex,Pants
+Pants__d92f1cf7-38b9-4975-814b-b6c5c3112741.jpg,Light blue jeans,jeans,light_blue,solid,,,,unisex,Pants
+Pants__c85ee6ca-1e04-4a64-b0b8-d01daaa4af1d.jpg,Grey jeans,jeans,grey,solid,,,,unisex,Pants
+Pants__abf87a41-fc2c-4ad9-a4a8-1b875cb73eed.jpg,Grey sweatpants,track_pants,grey,solid,,,,unisex,Pants
+Shorts__dfd4079d-967b-4b3e-8574-fbac11b58103.jpg,Red shorts,shorts,red,solid,,,,unisex,Shorts
+Shorts__e56a5e77-c22a-45a5-a172-7190f0dc024d.jpg,Blue shorts,shorts,blue,solid,,,,unisex,Shorts
+Shorts__670e668a-2f7e-4a66-b93e-72c0e1c6cbd2.jpg,Light grey chino shorts,shorts,grey,solid,casual;smart_casual,1.5,,unisex,Shorts
+Skirt__8d173264-bc7d-4175-8130-711c94d3f1ca.jpg,Black pencil skirt,skirt,black,solid,business;smart_casual,3.5,,womenswear,Skirt
+Skirt__0da586b0-bbfb-44fd-a629-12aee2b1d430.jpg,Denim mini skirt,skirt,blue,solid,casual;streetwear,2.0,,womenswear,Skirt
+Dress__377c407c-b353-45c5-b592-e68bad2d68d2.jpg,Royal blue sheath dress,dress_formal,blue,solid,business;formal,3.5,,womenswear,Dress
+Dress__dd0ff00d-5ce3-4150-b4ee-05da2c0a6555.jpg,Black party dress,dress_formal,black,solid,party;formal,,,womenswear,Dress
+Dress__22cc2840-9a64-4d9f-8dbe-00e81fa4b2c1.jpg,Tropical print summer dress,dress_casual,blue;white,printed,,,,womenswear,Dress
+Dress__32c91193-3fe7-48a1-8867-01c55e4f3985.jpg,Pink A-line dress,dress_casual,pink,solid,casual;party,2.5,,womenswear,Dress
+Dress__46ad36ad-8234-4fa1-a88b-e76256413c17.jpg,Blue embroidered dress,dress_formal,blue,textured,festive;formal,3.5,,womenswear,Dress
+Dress__c7e911d6-833f-4fcb-a81e-4e6145abd3b8.jpg,Grey patterned office dress,dress_formal,grey,printed,business;formal,3.5,,womenswear,Dress

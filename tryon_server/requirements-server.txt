@@ -1,0 +1,20 @@
+# Extra packages the GPU server needs ON TOP of Google Colab's preinstalled stack.
+# Deliberately NOT listed: torch, torchvision, diffusers, transformers, accelerate, numpy,
+# opencv, pillow, huggingface_hub -> we use Colab's versions (reinstalling torch on Colab
+# breaks CUDA builds and wastes ~10 minutes).
+#
+# Verified on 2026-11-08: CatVTON @ 7818397 imports and runs its full code path
+# (DensePose -> SCHP -> mask fusion -> diffusion loop, random weights) on Python 3.12 with
+# torch 2.15.0, diffusers 0.42.1, transformers 5.22.2 given these extras.
+
+fvcore           # detectron2 (DensePose) dependency
+iopath           # detectron2 file I/O
+yacs             # detectron2 config system
+omegaconf        # detectron2 lazy configs
+pycocotools      # imported by detectron2 data utilities
+cloudpickle
+av               # imported by densepose visualisation utilities
+diffusers>=0.31  # Colab ships it; floor in case an old runtime image is used
+fastapi>=0.110
+uvicorn>=0.29
+python-multipart>=0.0.9

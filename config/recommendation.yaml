@@ -1,0 +1,182 @@
+# Knowledge base and weights for the context-aware recommender.
+#
+# Everything the recommender "knows" about dress codes lives here, so it can be inspected,
+# criticised and changed without touching code. Values are our own conventional judgements
+# about dress codes (documented as such in the report), not learned from data.
+#
+# Scales:
+#   formality 1 = athletic/lounge, 2 = casual, 3 = smart casual, 4 = business/formal, 5 = very formal
+#   warmth    1 = very light (tank top), 2 = light (t-shirt), 3 = medium (shirt+layer / light sweater),
+#             4 = warm (sweater, jacket), 5 = very warm (puffer)
+
+weights:            # relative importance of each factor (normalised to sum to 1 at load time)
+  occasion: 0.30
+  formality: 0.20
+  weather: 0.20
+  colour: 0.10
+  style: 0.05
+  clip: 0.15
+
+thresholds:
+  strong: 0.70      # factor value at or above which an explanation states it as a reason
+  weak: 0.30        # factor value at or below which an explanation adds a caution
+  recommend: 0.70   # overall score at or above which the verdict is "Recommended"
+  possible: 0.50    # ... "A reasonable option"; below this "Weak match"
+
+occasions:
+  casual_outing:
+    label: Casual outing
+    formality: 2.0
+    preferred_styles: [casual, streetwear, smart_casual]
+    discouraged_types: [blazer, shirt_formal, trousers_formal, dress_formal]
+    excluded_types: []
+    palette: []                       # no colour convention
+    clip_prompt: "casual clothes for hanging out with friends"
+  college:
+    label: College
+    formality: 2.0
+    preferred_styles: [casual, streetwear, smart_casual]
+    discouraged_types: [dress_formal, blazer]
+    excluded_types: []
+    palette: []
+    clip_prompt: "casual clothes a student wears to college classes"
+  office:
+    label: Office
+    formality: 3.5
+    preferred_styles: [business, smart_casual, formal]
+    discouraged_types: [hoodie, sweatshirt, tank_top, track_pants, shorts]
+    excluded_types: [tank_top]
+    palette: [white, light_blue, navy, grey, black, beige, blue]
+    clip_prompt: "business casual office wear"
+  formal_meeting:
+    label: Formal meeting
+    formality: 4.3
+    preferred_styles: [formal, business]
+    discouraged_types: [t_shirt, polo, hoodie, sweatshirt, jeans, denim_jacket, shorts, track_pants]
+    excluded_types: [tank_top, shorts, track_pants]
+    palette: [white, light_blue, navy, grey, black]
+    clip_prompt: "formal business attire for an important meeting"
+  interview:
+    label: Job interview
+    formality: 4.5
+    preferred_styles: [formal, business]
+    discouraged_types: [t_shirt, polo, sweater, cardigan, jeans, denim_jacket, leather_jacket]
+    excluded_types: [tank_top, hoodie, sweatshirt, shorts, track_pants]
+    palette: [white, light_blue, navy, grey, black]
+    clip_prompt: "formal professional outfit for a job interview"
+  wedding:
+    label: Wedding
+    formality: 4.3
+    preferred_styles: [traditional, festive, formal]
+    discouraged_types: [t_shirt, polo, jeans, sweatshirt, rain_jacket, puffer_jacket]
+    excluded_types: [tank_top, hoodie, track_pants, shorts]
+    palette: []                       # colour customs vary too much to encode fairly
+    clip_prompt: "elegant festive outfit for attending a wedding"
+  party:
+    label: Party
+    formality: 3.0
+    preferred_styles: [party, smart_casual, streetwear, festive]
+    discouraged_types: [track_pants, rain_jacket, puffer_jacket]
+    excluded_types: []
+    palette: []
+    clip_prompt: "stylish outfit for an evening party"
+  sports_outdoor:
+    label: Sports / outdoor activity
+    formality: 1.0
+    preferred_styles: [sporty, casual]
+    discouraged_types: [shirt_formal, blazer, trousers_formal, dress_formal, kurta, leather_jacket]
+    excluded_types: [blazer, dress_formal]
+    palette: []
+    clip_prompt: "sportswear for exercise and outdoor activities"
+  travel:
+    label: Travel
+    formality: 2.0
+    preferred_styles: [casual, sporty, smart_casual]
+    discouraged_types: [dress_formal, blazer, trousers_formal]
+    excluded_types: []
+    palette: []
+    clip_prompt: "comfortable clothes for travelling"
+
+settings:
+  indoor:
+    label: Indoor
+  outdoor:
+    label: Outdoor
+
+weather:
+  # target_warmth: [outdoor, indoor]. Indoors, climate control pulls extremes towards the middle.
+  hot:
+    label: Hot
+    target_warmth: [1.5, 2.0]
+    want_breathable: true
+    want_water_resistant: false
+    clip_prompt: "light breathable clothing for hot summer weather"
+  mild:
+    label: Mild / pleasant
+    target_warmth: [2.5, 2.5]
+    want_breathable: false
+    want_water_resistant: false
+    clip_prompt: "clothing for mild pleasant weather"
+  cold:
+    label: Cold
+    target_warmth: [4.2, 3.0]
+    want_breathable: false
+    want_water_resistant: false
+    clip_prompt: "warm clothing for cold winter weather"
+  rainy:
+    label: Rainy
+    target_warmth: [2.8, 2.5]
+    want_breathable: false
+    want_water_resistant: true       # only matters outdoors
+    clip_prompt: "waterproof clothing for rainy weather"
+
+colours:
+  # Named palette used for annotation, preferences and automatic colour naming (sRGB).
+  black: [20, 20, 20]
+  white: [245, 245, 245]
+  grey: [128, 128, 128]
+  navy: [25, 35, 80]
+  blue: [40, 90, 200]
+  light_blue: [150, 190, 230]
+  red: [200, 30, 40]
+  maroon: [110, 20, 35]
+  green: [40, 140, 60]
+  olive: [110, 110, 50]
+  yellow: [240, 210, 50]
+  orange: [240, 130, 30]
+  pink: [240, 150, 180]
+  purple: [110, 50, 140]
+  brown: [110, 70, 40]
+  beige: [215, 195, 160]
+
+styles: [casual, smart_casual, business, formal, streetwear, sporty, traditional, festive, party]
+
+# Defaults for each garment type: used to pre-fill catalogue annotations and to analyse
+# user-uploaded garments. Catalogue rows can override any value after human review.
+garment_types:
+  t_shirt:        {label: "T-shirt",          tryon_type: upper,   formality: 1.5, warmth: 2.0, breathable: true,  water_resistant: false, styles: [casual, streetwear],   clip_label: "a t-shirt"}
+  polo:           {label: "Polo shirt",       tryon_type: upper,   formality: 2.5, warmth: 2.0, breathable: true,  water_resistant: false, styles: [casual, smart_casual], clip_label: "a polo shirt"}
+  shirt_casual:   {label: "Casual shirt",     tryon_type: upper,   formality: 2.5, warmth: 2.0, breathable: true,  water_resistant: false, styles: [casual, smart_casual], clip_label: "a casual button-up shirt"}
+  shirt_formal:   {label: "Formal shirt",     tryon_type: upper,   formality: 4.0, warmth: 2.0, breathable: true,  water_resistant: false, styles: [business, formal],     clip_label: "a formal dress shirt"}
+  blouse:         {label: "Blouse",           tryon_type: upper,   formality: 3.0, warmth: 2.0, breathable: true,  water_resistant: false, styles: [smart_casual, business], clip_label: "a blouse"}
+  top:            {label: "Top",              tryon_type: upper,   formality: 2.0, warmth: 2.0, breathable: true,  water_resistant: false, styles: [casual, party],        clip_label: "a women's top"}
+  tank_top:       {label: "Tank top",         tryon_type: upper,   formality: 1.0, warmth: 1.0, breathable: true,  water_resistant: false, styles: [casual, sporty],       clip_label: "a sleeveless tank top"}
+  sweater:        {label: "Sweater",          tryon_type: upper,   formality: 2.5, warmth: 4.0, breathable: false, water_resistant: false, styles: [casual, smart_casual], clip_label: "a knitted sweater"}
+  sweatshirt:     {label: "Sweatshirt",       tryon_type: upper,   formality: 1.5, warmth: 3.5, breathable: false, water_resistant: false, styles: [casual, streetwear, sporty], clip_label: "a sweatshirt"}
+  hoodie:         {label: "Hoodie",           tryon_type: upper,   formality: 1.5, warmth: 3.5, breathable: false, water_resistant: false, styles: [casual, streetwear, sporty], clip_label: "a hoodie"}
+  cardigan:       {label: "Cardigan",         tryon_type: upper,   formality: 2.5, warmth: 3.5, breathable: false, water_resistant: false, styles: [casual, smart_casual], clip_label: "a cardigan"}
+  blazer:         {label: "Blazer",           tryon_type: upper,   formality: 4.5, warmth: 3.0, breathable: false, water_resistant: false, styles: [formal, business],     clip_label: "a blazer suit jacket"}
+  jacket:         {label: "Casual jacket",    tryon_type: upper,   formality: 2.5, warmth: 3.5, breathable: false, water_resistant: false, styles: [casual, streetwear],   clip_label: "a casual jacket"}
+  denim_jacket:   {label: "Denim jacket",     tryon_type: upper,   formality: 2.0, warmth: 3.0, breathable: false, water_resistant: false, styles: [casual, streetwear],   clip_label: "a denim jacket"}
+  leather_jacket: {label: "Leather jacket",   tryon_type: upper,   formality: 3.0, warmth: 3.5, breathable: false, water_resistant: true,  styles: [streetwear, party],    clip_label: "a leather jacket"}
+  rain_jacket:    {label: "Rain jacket",      tryon_type: upper,   formality: 1.5, warmth: 2.5, breathable: false, water_resistant: true,  styles: [casual, sporty],       clip_label: "a waterproof rain jacket"}
+  puffer_jacket:  {label: "Puffer jacket",    tryon_type: upper,   formality: 1.5, warmth: 5.0, breathable: false, water_resistant: true,  styles: [casual, sporty],       clip_label: "a padded puffer jacket"}
+  kurta:          {label: "Kurta",            tryon_type: upper,   formality: 3.5, warmth: 2.0, breathable: true,  water_resistant: false, styles: [traditional, festive], clip_label: "an Indian kurta"}
+  jeans:          {label: "Jeans",            tryon_type: lower,   formality: 2.0, warmth: 3.0, breathable: false, water_resistant: false, styles: [casual, streetwear],   clip_label: "a pair of jeans"}
+  trousers_formal: {label: "Formal trousers", tryon_type: lower,   formality: 4.0, warmth: 2.5, breathable: true,  water_resistant: false, styles: [business, formal],     clip_label: "formal trousers"}
+  chinos:         {label: "Chinos",           tryon_type: lower,   formality: 3.0, warmth: 2.5, breathable: true,  water_resistant: false, styles: [smart_casual, casual], clip_label: "chino pants"}
+  shorts:         {label: "Shorts",           tryon_type: lower,   formality: 1.0, warmth: 1.0, breathable: true,  water_resistant: false, styles: [casual, sporty],       clip_label: "shorts"}
+  track_pants:    {label: "Track pants",      tryon_type: lower,   formality: 1.0, warmth: 2.5, breathable: true,  water_resistant: false, styles: [sporty, casual],       clip_label: "track pants"}
+  skirt:          {label: "Skirt",            tryon_type: lower,   formality: 2.5, warmth: 2.0, breathable: true,  water_resistant: false, styles: [casual, smart_casual, party], clip_label: "a skirt"}
+  dress_casual:   {label: "Casual dress",     tryon_type: overall, formality: 2.0, warmth: 2.0, breathable: true,  water_resistant: false, styles: [casual],               clip_label: "a casual summer dress"}
+  dress_formal:   {label: "Formal dress",     tryon_type: overall, formality: 4.5, warmth: 2.5, breathable: false, water_resistant: false, styles: [formal, party, festive], clip_label: "an elegant evening dress"}

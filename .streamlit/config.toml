@@ -1,0 +1,56 @@
+# Trycraz theme: only shades taken from the berry/plum reference image.
+# No saturated reds, greens, yellows or blues: Streamlit's status colours are remapped to plum tones.
+
+[theme]
+base = "dark"
+primaryColor = "#A86C90"              # dusty rose: buttons, sliders, toggles, progress
+backgroundColor = "#170B13"           # near-black plum
+secondaryBackgroundColor = "#26121F"  # deep plum: inputs, expanders
+textColor = "#F2E6EE"                 # blush white
+linkColor = "#D7AFC6"                 # soft mauve
+linkUnderline = false
+borderColor = "#4A2440"               # muted plum
+showWidgetBorder = true
+baseRadius = "0.65rem"
+buttonRadius = "0.65rem"
+codeBackgroundColor = "#24111E"
+codeTextColor = "#E7C9DA"
+font = "Inter:https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap, sans-serif"
+headingFont = "Playfair Display:https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&display=swap, serif"
+dataframeBorderColor = "#3A1B30"
+dataframeHeaderBackgroundColor = "#2E1627"
+
+# Status / badge colours, all berry shades
+redColor = "#B0577C"                  # wine berry (errors)
+redBackgroundColor = "#3A1427"
+redTextColor = "#F0C2D6"
+orangeColor = "#C08AA6"
+orangeBackgroundColor = "#341A2B"
+orangeTextColor = "#EBCFDE"
+yellowColor = "#D2A9C0"               # warnings
+yellowBackgroundColor = "#33192A"
+yellowTextColor = "#F0D9E6"
+greenColor = "#B98BAA"                # success
+greenBackgroundColor = "#2C1626"
+greenTextColor = "#E9D2E0"
+blueColor = "#9C7BA6"                 # info
+blueBackgroundColor = "#2A1626"
+blueTextColor = "#E2D0E4"
+violetColor = "#9C6A92"
+violetBackgroundColor = "#2E1529"
+violetTextColor = "#E6CCDD"
+grayColor = "#8E7385"
+grayBackgroundColor = "#2A1A25"
+grayTextColor = "#D6C4CF"
+chartCategoricalColors = ["#A86C90", "#D7AFC6", "#72395D", "#C79AB6", "#542344", "#E9D2E0"]
+
+[theme.sidebar]
+backgroundColor = "#1F0E19"
+secondaryBackgroundColor = "#2E1627"
+borderColor = "#3A1B30"
+
+[client]
+toolbarMode = "viewer"                # hides the developer "Deploy" button
+
+[browser]
+gatherUsageStats = false

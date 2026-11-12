@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Secrets / local config (tunnel URLs, tokens)
+.env
+.streamlit/secrets.toml
+
+# Model weights and caches (never commit; downloaded at runtime)
+*.ckpt
+*.pth
+*.pt
+*.safetensors
+*.bin
+*.onnx
+models/
+checkpoints/
+hf_cache/
+.cache/
+
+# Upstream repositories cloned on the GPU server
+third_party/
+
+# Generated images and user uploads (privacy)
+outputs/
+uploads/
+user_photos/
+
+# Research datasets (licensed separately; download yourself)
+data/datasets/
+data/sources/
+data/eval/
+
+# Cached embeddings (recomputed automatically)
+data/catalogue/*.npy
+data/catalogue/embeddings/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Claude sync staging
+.sync/

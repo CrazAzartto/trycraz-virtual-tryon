@@ -1,0 +1,66 @@
+# Recommender evaluation scenarios with graded relevance labels.
+#   2 = good choice, 1 = acceptable, unlisted = unsuitable (0).
+#
+# Written on 2026-11-08 from the garment names and photos, BEFORE running evaluation/rec_eval.py on
+# this catalogue. Honest caveat: the same author (the AI assistant used on the project) also wrote the
+# knowledge base and the manual annotations, so agreement is likely optimistic. An independent re-labelling
+# by the project owner (or a classmate) is planned; record it as a second labeller below and compare.
+meta:
+  catalogue: data/catalogue/clothing_catalogue.csv (52 garments, cd_001-cd_052)
+  labeller: AI assistant (Claude), from images and names, before running the evaluation
+  date: 2026-11-08
+
+scenarios:
+  - name: Interview, indoor, mild - tops
+    context: {occasion: interview, setting: indoor, weather: mild, categories: [upper]}
+    relevance: {cd_002: 2, cd_004: 2, cd_039: 2, cd_036: 2, cd_007: 2, cd_035: 1, cd_008: 1, cd_018: 1}
+
+  - name: Interview, indoor, mild - bottoms
+    context: {occasion: interview, setting: indoor, weather: mild, categories: [lower]}
+    relevance: {cd_027: 2, cd_029: 2, cd_045: 2}
+
+  - name: Casual outing, outdoor, hot - tops
+    context: {occasion: casual_outing, setting: outdoor, weather: hot, categories: [upper]}
+    relevance: {cd_046: 2, cd_047: 2, cd_048: 2, cd_049: 2, cd_050: 2, cd_037: 2, cd_040: 2, cd_052: 2,
+                cd_032: 1, cd_033: 1, cd_034: 1, cd_006: 1}
+
+  - name: Casual outing, outdoor, hot - bottoms
+    context: {occasion: casual_outing, setting: outdoor, weather: hot, categories: [lower]}
+    relevance: {cd_041: 2, cd_042: 2, cd_043: 2, cd_044: 2, cd_030: 1, cd_031: 1}
+
+  - name: College, indoor, mild - tops
+    context: {occasion: college, setting: indoor, weather: mild, categories: [upper]}
+    relevance: {cd_046: 2, cd_047: 2, cd_048: 2, cd_049: 2, cd_032: 2, cd_033: 2, cd_034: 2, cd_037: 2,
+                cd_038: 2, cd_040: 2, cd_015: 1, cd_016: 1, cd_017: 1, cd_019: 1, cd_020: 1, cd_021: 1, cd_001: 1}
+
+  - name: Wedding, indoor, mild - all
+    context: {occasion: wedding, setting: indoor, weather: mild}
+    relevance: {cd_005: 2, cd_002: 2, cd_012: 2, cd_051: 2, cd_014: 1, cd_011: 1, cd_039: 1, cd_004: 1,
+                cd_027: 1, cd_029: 1, cd_006: 1}
+
+  - name: Party, indoor, mild - all
+    context: {occasion: party, setting: indoor, weather: mild}
+    relevance: {cd_014: 2, cd_051: 2, cd_005: 2, cd_003: 2, cd_052: 2, cd_026: 1, cd_010: 1, cd_007: 1,
+                cd_030: 1, cd_031: 1, cd_006: 1}
+
+  - name: Sports, outdoor, hot - all
+    context: {occasion: sports_outdoor, setting: outdoor, weather: hot}
+    relevance: {cd_050: 2, cd_042: 2, cd_043: 2, cd_028: 1, cd_046: 1, cd_047: 1, cd_048: 1, cd_049: 1, cd_041: 1}
+
+  - name: Travel, outdoor, rainy - tops
+    context: {occasion: travel, setting: outdoor, weather: rainy, categories: [upper]}
+    relevance: {cd_023: 2, cd_022: 1, cd_024: 1, cd_003: 1, cd_015: 1, cd_016: 1, cd_017: 1, cd_025: 1}
+
+  - name: Casual outing, outdoor, cold - tops
+    context: {occasion: casual_outing, setting: outdoor, weather: cold, categories: [upper]}
+    relevance: {cd_022: 2, cd_024: 2, cd_018: 2, cd_019: 2, cd_020: 2, cd_021: 2, cd_015: 2, cd_016: 2,
+                cd_017: 2, cd_025: 2, cd_026: 2, cd_003: 2, cd_001: 1, cd_038: 1}
+
+  - name: Office, indoor, mild - tops
+    context: {occasion: office, setting: indoor, weather: mild, categories: [upper]}
+    relevance: {cd_035: 2, cd_036: 2, cd_039: 2, cd_002: 2, cd_004: 2, cd_007: 2, cd_008: 2, cd_018: 2,
+                cd_032: 1, cd_033: 1, cd_019: 1, cd_020: 1, cd_021: 1}
+
+  - name: Office, indoor, mild - dresses
+    context: {occasion: office, setting: indoor, weather: mild, categories: [overall]}
+    relevance: {cd_013: 2, cd_011: 2, cd_012: 1}

@@ -1,0 +1,16 @@
+[project]
+name = "trycraz-virtual-tryon"
+version = "0.1.0"
+description = "Trycraz: virtual try-on (CatVTON) with context-aware clothing recommendations - B.Tech Computer Vision project, IIT Jodhpur"
+authors = [{ name = "Darshan Prajapati" }, { name = "Sunny Kumar" }]
+license = { text = "MIT" }
+readme = "README.md"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+markers = [
+    "slow: loads real models (CLIP / MediaPipe); deselect with -m 'not slow'",
+    "network: needs a running try-on server (TRYON_SERVER_URL)",
+]
